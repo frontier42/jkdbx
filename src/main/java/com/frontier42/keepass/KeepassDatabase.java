@@ -43,7 +43,7 @@ public class KeepassDatabase {
 		Document doc= reader.loadData(bis, password);
 		long endTime=System.nanoTime();
 		long loadTime=endTime-startTime;
-		System.err.println("loadTime:"+loadTime);
+		//System.err.println("loadTime:"+loadTime);
 		doc.getDocumentElement().setAttribute("loadTime",Long.toString(loadTime));
 		return doc;
 	}
