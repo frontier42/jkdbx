@@ -6,7 +6,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.frontier42.keepass.KeepassDatabase;
+import com.frontier42.keepass.KeepassDatabaseFactory;
 import com.keepassdroid.database.CrsAlgorithm;
 import com.keepassdroid.database.PwCompressionAlgorithm;
 import com.keepassdroid.database.exception.InvalidDBVersionException;

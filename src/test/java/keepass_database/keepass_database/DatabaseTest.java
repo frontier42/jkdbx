@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.frontier42.keepass.KeepassDatabase;
+import com.frontier42.keepass.KeepassDatabaseFactory;
 
 /**
  * Unit test for simple App.
@@ -105,7 +105,7 @@ public class DatabaseTest
         System.out.println("url:"+url);
         File xmlFile=new File(new File(url.toURI()).getParentFile().getParentFile().getParentFile(), "target/output.kdbx.xml");
         InputStream stream=url.openStream();
-        Document doc=KeepassDatabase.loadDocument(stream, masterKey);
+        Document doc=KeepassDatabaseFactory.loadDocument(stream, masterKey);
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         System.out.println(xmlFile);
         Result output = new StreamResult(xmlFile);

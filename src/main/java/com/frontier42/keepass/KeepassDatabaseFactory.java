@@ -15,7 +15,7 @@ import com.keepassdroid.database.exception.InvalidDBVersionException;
 import com.keepassdroid.database.exception.InvalidPasswordException;
 
 
-public class KeepassDatabase {
+public class KeepassDatabaseFactory {
 	public static Document loadDocument(File file, String password) throws IOException, InvalidDBVersionException, InvalidPasswordException, InvalidDBException{
 		Document doc=null;
 		InputStream inputStream=new FileInputStream(file);
@@ -46,5 +46,12 @@ public class KeepassDatabase {
 		//System.err.println("loadTime:"+loadTime);
 		doc.getDocumentElement().setAttribute("loadTime",Long.toString(loadTime));
 		return doc;
+	}
+	
+	public static InputStream openDecryptedStrem(InputStream is, String password) throws IOException, InvalidDBVersionException, InvalidPasswordException, InvalidDBException{
+		BufferedInputStream bis = new BufferedInputStream(is);
+		DatabaseReaderV4 reader=new DatabaseReaderV4();
+		return reader.openDecryptedStrem(bis, password);
+		
 	}
 }
