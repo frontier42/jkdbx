@@ -9,6 +9,7 @@ import java.net.URL;
 
 import org.w3c.dom.Document;
 
+import com.frontier42.keepass.impl.DatabaseDomReaderV4;
 import com.frontier42.keepass.impl.DatabaseReaderV4;
 import com.keepassdroid.database.exception.InvalidDBException;
 import com.keepassdroid.database.exception.InvalidDBVersionException;
@@ -38,7 +39,7 @@ public class KeepassDatabaseFactory {
 	}
 	public static Document loadDocument(InputStream is, String password) throws IOException, InvalidDBVersionException, InvalidPasswordException, InvalidDBException{
 		BufferedInputStream bis = new BufferedInputStream(is);
-		DatabaseReaderV4 reader=new DatabaseReaderV4();
+		DatabaseDomReaderV4 reader=new DatabaseDomReaderV4();
 		long startTime=System.nanoTime();
 		Document doc= reader.loadData(bis, password);
 		long endTime=System.nanoTime();
@@ -52,6 +53,5 @@ public class KeepassDatabaseFactory {
 		BufferedInputStream bis = new BufferedInputStream(is);
 		DatabaseReaderV4 reader=new DatabaseReaderV4();
 		return reader.openDecryptedStrem(bis, password);
-		
 	}
 }

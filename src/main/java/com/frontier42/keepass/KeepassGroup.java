@@ -24,6 +24,7 @@ public class KeepassGroup {
 	}
 	public void add(KeepassEntry entry) {
 		entries.add(entry);
+		this.database.onAdd(entry);
 	}
 	public List<KeepassEntry> getEntries() {
 		return entries;

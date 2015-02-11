@@ -1,12 +1,15 @@
 package com.frontier42.keepass;
 
+import java.util.regex.Matcher;
+
+
 
 public class KeepassEntry {
 	private final KeepassGroup group;
 	
 	private String title;
-	private String username;
-	private String password;
+	private KeepassValue username;
+	private KeepassValue password;
 	private String uuid;
 	
 	public KeepassEntry(KeepassGroup group) {
@@ -18,17 +21,20 @@ public class KeepassEntry {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getUsername() {
+	public KeepassValue getUsername() {
 		return username;
 	}
-	public void setUsername(String username) {
+	public void setUsername(KeepassValue username) {
 		this.username = username;
 	}
-	public String getPassword() {
+	public KeepassValue getPassword() {
 		return password;
 	}
-	public void setPassword(String password) {
+	public void setPassword(KeepassValue password) {
 		this.password = password;
+	}
+	public String getUUID() {
+		return uuid;
 	}
 	public void setUUID(String uuid) {
 		this.uuid=uuid;
@@ -39,5 +45,8 @@ public class KeepassEntry {
 	}
 	public KeepassGroup getGroup() {
 		return group;
+	}
+	public KeepassValue createValue(String value){
+		return this.getGroup().getDatabase().createValue(this, value);
 	}
 }

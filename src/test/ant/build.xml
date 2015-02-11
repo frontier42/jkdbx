@@ -1,0 +1,12 @@
+<project name="test-keepass-property">
+	<target name="load-properties">
+		<property name="database.url" value="https://localhost/webapp/test.kdbx" />
+		<makeurl file="../resources/test.kdbx" property="database.url"/>
+		<taskdef name="keepass-property" classname="com.frontier42.keepass.ant.KeepassProperty" />
+		<keepass-property url="${database.url}"
+			 truststore="c:/temp/client-truststore.jks" truststorePassword="changeit"
+			 keystore="c:/temp/client-keystore.jks" keystorePassword="changeit"
+			 masterKey="123!AbC" prefix="keepass."/>
+		<echoproperties/>
+	</target>
+</project>
