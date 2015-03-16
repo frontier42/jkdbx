@@ -49,8 +49,7 @@ public class PwStreamCipherFactory {
 		try {
 			md = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			throw new RuntimeException("SHA 256 not supported");
+			throw new RuntimeException("SHA 256 not supported", e);
 		}
 		byte[] key32 = md.digest(key);
 		

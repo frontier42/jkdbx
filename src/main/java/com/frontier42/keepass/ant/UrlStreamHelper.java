@@ -35,7 +35,7 @@ public class UrlStreamHelper{
 	private File keystore;
 	private String keystoreType="jks";
 	private String keystorePassword;
-	
+	private String sslProtocol="TLSv1.2";
 	
 	
 	public File getTruststore() {
@@ -85,7 +85,12 @@ public class UrlStreamHelper{
 	public void setKeystorePassword(String keystorePassword) {
 		this.keystorePassword = keystorePassword;
 	}
-
+	public String getSslProtocol() {
+		return sslProtocol;
+	}
+	public void setSslProtocol(String sslProtocol) {
+		this.sslProtocol = sslProtocol;
+	}
 	protected KeyManager[] getKeyManagers(String keyStoreType, InputStream keyStoreFile, String keyStorePassword) throws GeneralSecurityException, IOException {
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 		keyStore.load(keyStoreFile, keyStorePassword.toCharArray());
@@ -103,7 +108,7 @@ public class UrlStreamHelper{
 	}
 
 	protected SSLContext createSSLContext() throws GeneralSecurityException, IOException {
-		SSLContext sslcontext = SSLContext.getInstance("TLSv1.2");
+		SSLContext sslcontext = SSLContext.getInstance(getSslProtocol());
 		InputStream trustStoreInputStream = null;
 		InputStream keyStoreInputStream = null;
 

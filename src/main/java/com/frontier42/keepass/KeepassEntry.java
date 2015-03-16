@@ -46,6 +46,9 @@ public class KeepassEntry {
 	public KeepassGroup getGroup() {
 		return group;
 	}
+	public KeepassValue createEncryptedValue(String value){
+		return new KeepassValueEncrypted(value);
+	}
 	public KeepassValue createValue(String value){
 		return this.getGroup().getDatabase().createValue(this, value);
 	}

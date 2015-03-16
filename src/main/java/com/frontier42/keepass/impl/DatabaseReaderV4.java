@@ -19,6 +19,8 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.crypto.StreamCipher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.keepassdroid.crypto.CipherFactory;
 import com.keepassdroid.crypto.PwStreamCipherFactory;
@@ -32,6 +34,7 @@ import com.keepassdroid.stream.LEDataInputStream;
 import com.keepassdroid.stream.NullOutputStream;
 
 public class DatabaseReaderV4 {
+	private final Logger LOG=LoggerFactory.getLogger(getClass());
 	protected UUID dataCipher;
 	protected PwCompressionAlgorithm compressionAlgorithm;
 	protected long numKeyEncRounds;
@@ -83,7 +86,7 @@ public class DatabaseReaderV4 {
 		} catch (NoSuchAlgorithmException e) {
 			throw new IOException("SHA-256 not supported");
 		}
-
+		
 		byte[] bKey;
 		try {
 			bKey = key.getBytes(encoding);
@@ -190,9 +193,12 @@ public class DatabaseReaderV4 {
 			assert (false);
 			throw new IOException("Invalid stream key.");
 		}
-		randomStream = PwStreamCipherFactory.getInstance(
-				header.innerRandomStream, header.protectedStreamKey);
+		LOG.info("CipherKey:{}", header.protectedStreamKey);
+		randomStream = new StreamCipherDelegator(PwStreamCipherFactory.getInstance(
+				header.innerRandomStream, header.protectedStreamKey));
 		return decompressed;
 	}
-
+	public StreamCipher getRandomStreamCipher() {
+		return randomStream;
+	}
 }

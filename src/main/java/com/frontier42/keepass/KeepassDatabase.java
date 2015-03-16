@@ -1,20 +1,20 @@
 package com.frontier42.keepass;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 public class KeepassDatabase {
-	private List<KeepassGroup> groups=new ArrayList<KeepassGroup>();
+	private Map<MyKeyReferencey, KeepassGroup> groups=KeepassGroup.MAKE_MAP();
 	private Map<String, KeepassEntry> cache=new Hashtable<String, KeepassEntry>();
+	private KeepassGroup rootGroup;
 	
 	public void add(KeepassGroup group) {
-		groups.add(group);
+		groups.put(KeepassGroup.MAKE_KEY(group),group);
 	}
-	public List<KeepassGroup> getGroups() {
-		return groups;
+	public Collection<KeepassGroup> getGroups() {
+		return groups.values();
 	}
 	public KeepassGroup newGroup() {
 		return new KeepassGroup(this);
@@ -45,5 +45,13 @@ public class KeepassDatabase {
 			}
 		}
 		return  createValueByVal(ownerEntry, value);
+	}
+	public void onAdd(KeepassGroup group) {
+	}
+	public void setRootGroup(KeepassGroup group) {
+		this.rootGroup=group;
+	}
+	public KeepassGroup getRootGroup() {
+		return rootGroup;
 	}
 }

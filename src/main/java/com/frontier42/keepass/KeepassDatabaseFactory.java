@@ -50,8 +50,10 @@ public class KeepassDatabaseFactory {
 	}
 	
 	public static InputStream openDecryptedStrem(InputStream is, String password) throws IOException, InvalidDBVersionException, InvalidPasswordException, InvalidDBException{
+		return openDecryptedStrem(new DatabaseReaderV4(), is, password);
+	}
+	public static InputStream openDecryptedStrem(DatabaseReaderV4 reader, InputStream is, String password) throws IOException, InvalidDBVersionException, InvalidPasswordException, InvalidDBException{
 		BufferedInputStream bis = new BufferedInputStream(is);
-		DatabaseReaderV4 reader=new DatabaseReaderV4();
 		return reader.openDecryptedStrem(bis, password);
 	}
 }
