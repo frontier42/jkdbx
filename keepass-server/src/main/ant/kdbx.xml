@@ -1,0 +1,108 @@
+<project name="__kdbx">
+	<scriptdef name="load-secure-properties" language="javascript">
+		<![CDATA[
+		importPackage(java.io);
+		importPackage(java.net);
+		importPackage(java.util);
+		importPackage(java.security);
+		importPackage(javax.net.ssl);
+		importPackage(org.apache.tools.ant);
+		importPackage(org.apache.tools.ant.property);
+		
+		var remoteUrl='https://localhost/keepass/get.properties';
+		var trustStoreFile=new File(project.getProperty("kdbx.trustStore"));
+		var trustStoreType=new java.lang.String("jks");
+		var trustStorePassword=new java.lang.String(project.getProperty("kdbx.trustStorePassword"));
+		
+		var keyStoreFile=new File(project.getProperty("kdbx.keyStore"));
+		var keyStoreType=new java.lang.String("jks");
+		var keyStorePassword=new java.lang.String(project.getProperty("kdbx.keyStorePassword"));
+		var sslProtocol="TLSv1.2";
+		var prefix='kdbx.';
+		
+  		self.log("Hello from script");
+		
+		function getKeyManagers(inputStream) {
+			var keyStore = KeyStore.getInstance(keyStoreType);
+			keyStore.load(inputStream, keyStorePassword.toCharArray());
+			var kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			kmf.init(keyStore, keyStorePassword.toCharArray());
+			return kmf.getKeyManagers();
+		}
+		function getTrustManagers(inputStream) {
+			var trustStore = KeyStore.getInstance(trustStoreType);
+			trustStore.load(inputStream, trustStorePassword.toCharArray());
+			var tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(trustStore);
+			return tmf.getTrustManagers();
+		}
+		function createSSLContext() {
+			var sslcontext = SSLContext.getInstance(sslProtocol);
+			var trustStoreInputStream = null;
+			var keyStoreInputStream = null;
+
+			try {
+				trustStoreInputStream= new FileInputStream(trustStoreFile);
+				keyStoreInputStream=new FileInputStream(keyStoreFile);
+				var trustManagers = getTrustManagers(trustStoreInputStream);
+				var keyManagers = getKeyManagers(keyStoreInputStream);
+				sslcontext.init(keyManagers, trustManagers, new SecureRandom());
+			} finally {
+				if (trustStoreInputStream!=null)trustStoreInputStream.close();
+				if (keyStoreInputStream!=null)keyStoreInputStream.close();
+			}
+			return sslcontext;
+		}
+		function setSSLSocketFactory(conn) {
+			if (conn instanceof HttpsURLConnection) {
+				var context = createSSLContext();
+				var sf = context.getSocketFactory();
+				conn.setSSLSocketFactory(sf);
+			}
+		}
+
+		var propertyHelper= PropertyHelper.getPropertyHelper(project);
+		
+		try{
+			var url=new URL(remoteUrl);
+			conn = url.openConnection();
+			conn.setConnectTimeout(200);
+			conn.setReadTimeout(5000);
+			setSSLSocketFactory(conn);
+			var inputStream=conn.getInputStream();
+			var props=new Properties();
+			props.load(inputStream);
+			
+			new ResolvePropertyMap(project,propertyHelper,propertyHelper.getExpanders()).resolveAllProperties(props, null, false);
+			
+			self.log(props);
+			for (it = props.keySet().iterator(); it.hasNext();) {
+				var k = it.next();
+				var newName=k;
+				if (prefix!=null){
+					newName=prefix+k;
+				}
+				self.log(k);
+				propertyHelper.setNewProperty(newName, props.get(k));
+			}
+		} catch (e if e.javaException instanceof java.net.SocketTimeoutException) {
+			self.log('Secure Server Unavailable.', Project.MSG_WARN);
+		}finally{
+			propertyHelper.setProperty('kdbx.keyStore', '~~SECRET~~', false);
+			propertyHelper.setProperty('kdbx.keyStorePassword', '~~SECRET~~', false);
+			propertyHelper.setProperty('kdbx.trustStore', '~~SECRET~~', false);
+			propertyHelper.setProperty('kdbx.trustStorePassword', '~~SECRET~~', false);
+		}
+]]>
+	</scriptdef>
+	<target name="__test">
+		<property name="kdbx.keyStore" location="../../test/resources/certs/keystore.client.jks"/>
+		<property name="kdbx.keyStorePassword" value="changeit"/>
+		
+		<property name="kdbx.trustStore" location="../../test/resources/certs/keystore.truststore.jks"/>
+		<property name="kdbx.trustStorePassword" value="changeit"/>
+
+		<load-secure-properties/>
+		<echoproperties/>
+	</target>
+</project>
